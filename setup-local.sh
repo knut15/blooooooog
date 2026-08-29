@@ -25,11 +25,14 @@ EOF
   chmod 600 "$ENV_FILE"
   echo "[+] .env 생성"
 fi
-set -a; . "$ENV_FILE"; set +a
+set -a
+# shellcheck source=/dev/null
+. "$ENV_FILE"
+set +a
 
 # --- 2. MariaDB 기동 ---
 brew services start mariadb >/dev/null 2>&1 || true
-for i in $(seq 1 30); do
+for _ in $(seq 1 30); do
   mysqladmin ping --silent 2>/dev/null && break
   sleep 1
 done
