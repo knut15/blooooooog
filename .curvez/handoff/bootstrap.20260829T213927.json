@@ -1,0 +1,23 @@
+{
+  "from": "curvez:bootstrap",
+  "to": "user",
+  "status": "blocked",
+  "summary": "git 전략과 CI 는 확정했으나 stack 을 확정하지 못했다.",
+  "done": [
+    ".curvez/ 스캐폴드 (profile.json, architecture.md, team.md, research/, handoff/, tmp/)",
+    "git 2단 전략 확정 — baseBranch=release, releaseBranch=main",
+    ".github/workflows/ci.yml 작성 (PHP 문법 검사, shellcheck, .env 추적 여부 확인)",
+    ".gitignore — .env 와 WordPress 코어 제외, 자식 테마만 추적"
+  ],
+  "blocked_on": [
+    {
+      "who": "user",
+      "what": "profile.json 의 stack 값",
+      "why": "curvez 의 stack 계약은 nextjs | react-native | monorepo 세 가지다. 이 저장소는 package.json 이 없는 WordPress PHP 프로젝트라 셋 중 어디에도 해당하지 않는다. 값을 지어내면 후속 에이전트가 존재하지 않는 경로에 코드를 쓴다.",
+      "options": [
+        "curvez 를 git 전략과 CI 용도로만 쓴다 (stack 키 없이 유지)",
+        "이 저장소에서는 curvez 워커를 쓰지 않는다"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [release, main]
+  push:
+    branches: [release, main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 설치
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      # 가장 싼 게이트부터 둔다. 먼저 깨지는 것이 먼저 보고돼야 원인 좁히기가 싸다.
+      - name: PHP 문법 검사
+        run: |
+          find wordpress/wp-content/themes/generatepress-child router.php \
+            -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: 셸 스크립트 검사
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y shellcheck
+          shellcheck setup-local.sh serve.sh
+
+      - name: 비밀 파일이 추적되지 않는지 확인
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env 가 저장소에 추적되고 있다"
+            exit 1
+          fi
+          echo ".env 는 추적되지 않는다"
