@@ -48,3 +48,15 @@ brew install php@8.3 mariadb
 - `main` — 배포된 것. PR 머지는 사람이 누른다
 - `release` — 통합 브랜치. 작업 브랜치는 여기서 따고 PR 도 여기로 연다
 - `feature/*` · `fix/*` — 작업 브랜치
+
+### 머지 방식
+
+단계마다 다르다.
+
+| 흐름 | 방식 | 이유 |
+|---|---|---|
+| `feature/*` → `release` | **rebase** | 이력을 한 줄로 유지한다 |
+| `release` → `main` | **merge commit** | rebase 로 올리면 커밋 해시가 복제돼 두 브랜치 이력이 갈라진다. 그 뒤로는 같은 파일을 양쪽이 각각 추가한 것으로 보여 add/add 충돌이 난다 |
+
+두 단계 모두 rebase 를 쓰면 `release` 와 `main` 이 내용은 같은데 해시가 다른
+커밋을 각각 갖게 되고, 다음 머지부터 매번 충돌한다.
