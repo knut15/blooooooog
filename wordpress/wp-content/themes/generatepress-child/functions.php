@@ -371,3 +371,41 @@ function gpc_filter_avatar_html( $avatar, $id_or_email, $size, $default, $alt ) 
 	);
 }
 add_filter( 'get_avatar', 'gpc_filter_avatar_html', 10, 5 );
+
+/**
+ * 목록용 썸네일 크기. 레티나를 고려해 표시 크기(168x105)의 2배로 자른다.
+ */
+function gpc_add_list_thumb_size() {
+	add_image_size( 'gpc-list-thumb', 336, 210, true );
+}
+add_action( 'after_setup_theme', 'gpc_add_list_thumb_size' );
+
+/**
+ * 목록에서는 원본(full) 대신 잘라 둔 썸네일을 쓴다.
+ *
+ * @param string $size 기존 크기.
+ * @return string
+ */
+function gpc_list_thumb_size( $size ) {
+	return is_singular() ? $size : 'gpc-list-thumb';
+}
+add_filter( 'generate_page_header_default_size', 'gpc_list_thumb_size' );
+
+/**
+ * 목록의 메타를 "날짜 · 작성자" 한 줄로 발췌 아래에 둔다.
+ * GeneratePress 기본 메타는 제목 바로 아래에 붙는데, 목록에서는
+ * 제목 → 발췌 → 메타 순이 읽기 흐름에 맞다.
+ */
+function gpc_list_meta() {
+	if ( is_singular() || ! is_main_query() ) {
+		return;
+	}
+	?>
+	<div class="gpc-list-meta">
+		<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'n월 j일' ) ); ?></time>
+		<span class="gpc-sep">·</span>
+		<span class="gpc-list-author"><?php the_author(); ?></span>
+	</div>
+	<?php
+}
+add_action( 'generate_after_entry_content', 'gpc_list_meta', 5 );
