@@ -1,0 +1,767 @@
+/*
+Theme Name: GeneratePress Child
+Template: generatepress
+Version: 1.0.0
+Text Domain: generatepress-child
+*/
+
+/* ============================================================
+   1. 디자인 토큰
+   ============================================================ */
+:root {
+  --font-sans:  'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+                system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono:  'SF Mono', SFMono-Regular, ui-monospace, 'JetBrains Mono',
+                Menlo, Consolas, monospace;
+
+  --color-text:        #363737;   /* Substack 본문색 */
+  --color-text-muted:  #6b7280;
+  --color-heading:     #1a1a1a;
+  --color-accent:      #2096ff;   /* Substack 파랑 — 링크와 인용 보더 */
+  --color-accent-soft: #e8f3ff;
+  --color-border:      #e6e8ec;
+  --color-bg:          #ffffff;
+  --color-bg-subtle:   #f7f8fa;
+
+  --content-width: 728px;
+  --radius: 8px;
+}
+
+/* ============================================================
+   2. 본문 기본 — 한국어 가독성 우선
+   ============================================================ */
+body {
+  font-family: var(--font-sans);
+  /* Substack 본문은 19px 세리프. 산세리프는 같은 크기에서 더 크게 보이므로 18px 로 잡는다 */
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--color-text);
+  background: var(--color-bg);
+  letter-spacing: -0.003em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 한국어는 단어 중간에서 줄바꿈되면 매우 읽기 나빠진다.
+   keep-all 로 어절 단위 줄바꿈을 강제하고, 긴 URL 만 예외로 끊는다. */
+body, p, li, dd, dt, blockquote,
+h1, h2, h3, h4, h5, h6,
+.entry-title, .site-title, .widget-title {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ============================================================
+   3. 제목 스케일
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  color: var(--color-heading);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.4;
+}
+
+.entry-content h2 {
+  font-size: 1.94rem;   /* 31px — Substack 과 동일 (rem 기준은 16px) */
+  margin-top: 2.2em;
+  margin-bottom: 0.7em;
+}
+.entry-content h3 {
+  font-size: 1.5rem;    /* 24px — Substack h3 와 동일 */
+  margin-top: 2.2em;
+  margin-bottom: 0.7em;
+}
+.entry-content h4 {
+  font-size: 1.06rem;
+  margin-top: 1.9em;
+  margin-bottom: 0.6em;
+  color: var(--color-text);
+}
+
+/* 글 제목 */
+.entry-title {
+  font-size: 2.6rem;    /* 약 42px */
+  line-height: 1.34;
+  letter-spacing: -0.028em;
+  margin-bottom: 0.5rem;
+}
+.entry-title a { color: var(--color-heading); text-decoration: none; }
+.entry-title a:hover { color: var(--color-accent); }
+
+/* ============================================================
+   4. 본문 요소
+   ============================================================ */
+.entry-content { font-size: 18px; }
+.entry-content p { margin-bottom: 1.45em; }
+
+.entry-content a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.entry-content a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.entry-content strong { font-weight: 700; color: var(--color-heading); }
+
+/* GeneratePress 기본 margin-left 를 걷어내 본문선에 가깝게 맞춘다 */
+.entry-content ul,
+.entry-content ol { margin-bottom: 1.6em; margin-left: 0; padding-left: 1.35em; }
+.entry-content li { margin-bottom: 0.5em; }
+
+/* 인용 — 한글에서 이탤릭은 가독성을 해치므로 쓰지 않는다 */
+.entry-content blockquote {
+  margin: 1.8em 0;
+  padding: 0.1em 0 0.1em 1.2em;
+  border-left: 4px solid var(--color-accent);
+  color: var(--color-text);
+  font-style: normal;
+  font-size: 1em;
+}
+.entry-content blockquote p:last-child { margin-bottom: 0; }
+
+/* 코드 */
+.entry-content code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.12em 0.4em;
+  word-break: break-all;
+}
+.entry-content pre {
+  font-family: var(--font-mono);
+  font-size: 0.87em;
+  line-height: 1.7;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.1em 1.3em;
+  overflow-x: auto;
+  margin-bottom: 1.8em;
+}
+.entry-content pre code { background: none; border: none; padding: 0; }
+
+/* 이미지 */
+.entry-content img { border-radius: var(--radius); }
+.entry-content figcaption {
+  font-size: 0.86em;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: 0.7em;
+}
+
+/* 표 */
+.entry-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  margin-bottom: 1.8em;
+}
+.entry-content th,
+.entry-content td {
+  border: 1px solid var(--color-border);
+  padding: 0.65em 0.9em;
+  text-align: left;
+}
+.entry-content th { background: var(--color-bg-subtle); font-weight: 700; }
+
+/* 구분선 */
+.entry-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 3em 0;
+}
+
+/* ============================================================
+   5. 레이아웃 — 읽기 좋은 한 줄 길이(약 40자)
+   ============================================================ */
+.site-content .content-area { max-width: 100%; }
+
+/* 글 제목 / 본문 / 메타가 모두 같은 왼쪽 선에서 시작하도록
+   inside-article 의 직계 자식을 동일한 폭으로 묶는다. */
+.inside-article > *,
+.page-header > * { max-width: var(--content-width); margin-left: auto; margin-right: auto; }
+
+/* 넓게 쓰는 블록은 예외 */
+.entry-content > .alignwide,
+.entry-content > .alignfull { max-width: none; }
+
+/* ============================================================
+   6. 헤더 / 내비게이션
+   ============================================================ */
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+.site-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.03em; }
+.site-title a { color: var(--color-heading); }
+.site-description { color: var(--color-text-muted); font-size: 0.9rem; }
+
+.main-navigation {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.main-navigation a {
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+.main-navigation .current-menu-item > a { color: var(--color-accent); font-weight: 700; }
+
+/* ============================================================
+   7. 글 목록 / 메타
+   ============================================================ */
+.entry-meta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0;
+}
+.entry-meta a { color: var(--color-text-muted); }
+.entry-meta a:hover { color: var(--color-accent); }
+
+.generate-columns .inside-article,
+.blog .inside-article,
+.archive .inside-article {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2.4em;
+}
+
+/* ============================================================
+   8. 푸터
+   ============================================================ */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+.site-info a { color: var(--color-text-muted); }
+
+/* ============================================================
+   9. 광고 영역 — 본문과 시각적으로 분리
+   ============================================================ */
+.code-block, .ai-viewports {
+  margin-top: 2.4em !important;
+  margin-bottom: 2.4em !important;
+}
+
+/* ============================================================
+   10. 모바일
+   ============================================================ */
+@media (max-width: 768px) {
+  body, .entry-content { font-size: 16.5px; line-height: 1.78; }
+  .entry-title { font-size: 1.72rem; }
+  .entry-content h2 { font-size: 1.36rem; margin-top: 2em; }
+  .entry-content h3 { font-size: 1.16rem; }
+  .inside-article { padding: 1.6em 1.2em; }
+}
+
+/* ============================================================
+   11. 바이라인 — 아바타 + 작성자 + 날짜
+   ============================================================ */
+.gpc-byline {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  margin: 0.9em 0 0;
+}
+.gpc-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex: 0 0 44px;
+  background: var(--color-bg-subtle);
+}
+.gpc-byline-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+  min-width: 0;
+}
+.gpc-author {
+  font-family: var(--font-sans);
+  font-size: 0.87rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  letter-spacing: -0.01em;
+}
+.gpc-date {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+/* 단일 글에서는 기본 entry-meta 를 쓰지 않는다 */
+.single .entry-header .entry-meta { display: none; }
+
+/* ============================================================
+   12. 스크롤 시 상단 고정 바
+   ============================================================ */
+.gpc-sticky-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
+}
+.gpc-sticky-bar.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.gpc-sticky-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0.6em 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.65em;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+
+.gpc-sticky-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex: 0 0 26px;
+  background: var(--color-bg-subtle);
+}
+
+.gpc-sticky-title {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  letter-spacing: -0.015em;
+  /* 한 줄로 유지하고 넘치면 말줄임 — keep-all 과 충돌하지 않도록 명시 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gpc-sticky-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.gpc-sticky-author { font-weight: 600; color: var(--color-text); }
+.gpc-sticky-meta .gpc-sep { margin: 0 0.4em; opacity: 0.6; }
+
+/* 화면이 좁으면 제목만 남긴다 */
+@media (max-width: 600px) {
+  /* 좁은 화면에서는 아바타만 남기고 이름·날짜는 숨긴다 */
+  .gpc-sticky-author,
+  .gpc-sticky-meta .gpc-sep { display: none; }
+  .gpc-sticky-meta { font-size: 0; gap: 0; }
+  .gpc-sticky-inner { min-height: 50px; padding: 0.5em 0.9em; }
+  .gpc-avatar { width: 38px; height: 38px; flex-basis: 38px; }
+}
+
+/* 모션을 줄이도록 설정한 사용자에게는 애니메이션을 없앤다 */
+@media (prefers-reduced-motion: reduce) {
+  .gpc-sticky-bar { transition: none; }
+}
+
+/* ============================================================
+   13. 댓글 — Medium 스타일
+   ============================================================ */
+#comments {
+  max-width: var(--content-width);
+  margin: 2.2em auto 0;
+  padding-top: 2em;
+  border-top: 1px solid var(--color-border);
+}
+
+.comments-title {
+  font-family: var(--font-sans);
+  font-size: 1.32rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5em;
+  border: none;
+  padding: 0;
+}
+.comments-title .gpc-comment-count { color: var(--color-text-muted); font-weight: 600; }
+
+/* --- 목록 --- */
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.comment-list li.comment { list-style: none; margin: 0; }
+
+.comment-list .comment-body {
+  padding: 1.5em 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: none;
+  margin: 0;
+}
+/* 첫 댓글 위에는 선을 그리지 않는다 (제목 아래 여백으로 충분) */
+.comment-list > li.comment:first-child > .comment-body { border-top: none; padding-top: 0; }
+
+/* --- 아바타 + 이름 + 날짜 --- */
+.comment-list .comment-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.65em;
+  align-items: center;
+  margin-bottom: 0.85em;
+  padding: 0;
+  background: none;
+  border: none;
+}
+.comment-list .comment-meta .avatar {
+  grid-row: 1 / span 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin: 0;
+  background: var(--color-bg-subtle);
+}
+.comment-list .comment-author {
+  grid-column: 2;
+  align-self: end;
+  line-height: 1.25;
+}
+.comment-list .comment-author cite.fn,
+.comment-list .comment-author .fn {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.93rem;
+  color: var(--color-heading);
+  letter-spacing: -0.01em;
+}
+.comment-list .comment-author .says { display: none; }
+
+.comment-list .comment-metadata {
+  grid-column: 2;
+  align-self: start;
+  font-family: var(--font-sans);
+  font-size: 0.79rem;
+  line-height: 1.25;
+  color: var(--color-text-muted);
+  padding: 0;
+  margin: 0;
+}
+.comment-list .comment-metadata a { color: var(--color-text-muted); text-decoration: none; }
+.comment-list .comment-metadata a:hover { color: var(--color-accent); }
+.comment-list .comment-metadata .edit-link { margin-left: 0.6em; }
+
+/* 글쓴이 배지 */
+.comment-list li.bypostauthor > .comment-body .comment-author .fn::after {
+  content: '글쓴이';
+  display: inline-block;
+  margin-left: 0.5em;
+  padding: 0.1em 0.5em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: 100px;
+  vertical-align: 0.08em;
+}
+
+/* --- 본문 --- */
+/* GeneratePress 가 댓글 본문에 테두리와 30px 패딩을 준다. Medium 처럼 걷어낸다. */
+.comment-list .comment-content {
+  font-size: 0.98rem;
+  line-height: 1.72;
+  color: var(--color-text);
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+.comment-list .comment-content p { margin-bottom: 0.9em; }
+.comment-list .comment-content p:last-child { margin-bottom: 0; }
+.comment-list .comment-content a { color: var(--color-accent); text-decoration: none; }
+.comment-list .comment-content a:hover { text-decoration: underline; }
+
+/* --- 답글 링크 --- */
+.comment-list .reply {
+  margin-top: 0.75em;
+}
+.comment-list .comment-reply-link {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.comment-list .comment-reply-link:hover { color: var(--color-accent); }
+
+/* --- 답글 들여쓰기 --- */
+.comment-list .children {
+  list-style: none;
+  margin: 0 0 0 1.1em;
+  padding-left: 1.4em;
+  border-left: 2px solid var(--color-border);
+}
+.comment-list .children .comment-meta .avatar { width: 30px; height: 30px; }
+
+/* ============================================================
+   14. 댓글 폼
+   ============================================================ */
+.comment-respond {
+  margin-top: 2.6em;
+  padding-top: 2em;
+  border-top: 1px solid var(--color-border);
+}
+.comment-list .comment-respond {
+  border-top: none;
+  padding-top: 0.6em;
+  margin-top: 0.6em;
+}
+
+.comment-reply-title {
+  font-family: var(--font-sans);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.9em;
+}
+.comment-reply-title small { font-size: 0.78rem; font-weight: 400; margin-left: 0.6em; }
+.comment-reply-title small a { color: var(--color-text-muted); text-decoration: none; }
+
+#commentform p { margin-bottom: 0.8em; }
+
+#commentform textarea,
+#commentform input[type="text"],
+#commentform input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--color-text);
+  background: var(--color-bg-subtle);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.85em 1em;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+#commentform textarea { resize: vertical; min-height: 5.2em; }
+
+#commentform textarea:focus,
+#commentform input[type="text"]:focus,
+#commentform input[type="email"]:focus {
+  outline: none;
+  background: var(--color-bg);
+  border-color: var(--color-accent);
+}
+#commentform ::placeholder { color: var(--color-text-muted); opacity: 1; }
+
+/* 이름·이메일을 한 줄에 */
+.comment-form-author,
+.comment-form-email {
+  display: inline-block;
+  width: calc(50% - 0.3em);
+  vertical-align: top;
+}
+.comment-form-author { margin-right: 0.5em; }
+
+.comment-form-cookies-consent {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+}
+.comment-form-cookies-consent input { margin: 0; }
+
+.form-submit { margin-top: 0.4em; }
+#commentform .submit {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #fff;
+  background: var(--color-heading);
+  border: none;
+  border-radius: 100px;
+  padding: 0.7em 1.6em;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+#commentform .submit:hover { opacity: 0.82; }
+
+@media (max-width: 600px) {
+  .comment-form-author,
+  .comment-form-email { display: block; width: 100%; margin-right: 0; }
+  .comment-list .children { margin-left: 0.5em; padding-left: 1em; }
+}
+
+/* ============================================================
+   15. 이전 글 / 다음 글 — 썸네일 카드
+   ============================================================ */
+.gpc-post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  max-width: var(--content-width);
+  margin: 2.6em auto 0;
+  padding-top: 2em;
+  border-top: 1px solid var(--color-border);
+}
+
+.gpc-nav-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85em;
+  padding: 0.85em;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.gpc-nav-card:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg-subtle);
+}
+
+/* 다음 글은 오른쪽 정렬 — 썸네일이 바깥쪽으로 간다 */
+.gpc-nav-next {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.gpc-nav-empty { display: block; }
+
+/* 썸네일 */
+.gpc-nav-thumb {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--color-bg-subtle);
+}
+.gpc-nav-thumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+  user-select: none;
+}
+
+.gpc-nav-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22em;
+  min-width: 0;
+}
+
+.gpc-nav-label {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  letter-spacing: 0;
+}
+
+.gpc-nav-title {
+  font-family: var(--font-sans);
+  font-size: 0.93rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: var(--color-heading);
+  /* 두 줄까지만 보이고 넘치면 자른다 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* GeneratePress 기본 글 네비게이션은 쓰지 않는다 */
+.single .post-navigation,
+.single .nav-links > .nav-previous,
+.single .nav-links > .nav-next { }
+
+@media (max-width: 600px) {
+  .gpc-post-nav { grid-template-columns: 1fr; gap: 0.6em; }
+  .gpc-nav-next { flex-direction: row; text-align: left; }
+  .gpc-nav-empty { display: none; }
+}
+
+/* ============================================================
+   16. 댓글 아바타 고르기
+   ============================================================ */
+.comment-form-avatar { margin-bottom: 0.9em; }
+
+.gpc-avatar-legend {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5em;
+}
+
+.gpc-avatar-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.gpc-avatar-option {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  line-height: 0;
+}
+/* 라디오는 화면에서 숨기되 키보드 접근은 살린다 */
+.gpc-avatar-option input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.gpc-avatar-option img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--color-bg-subtle);
+  transition: border-color 0.15s ease, transform 0.12s ease;
+}
+.gpc-avatar-option:hover img { transform: translateY(-2px); }
+.gpc-avatar-option input:checked + img {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+.gpc-avatar-option input:focus-visible + img {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

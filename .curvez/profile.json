@@ -1,0 +1,17 @@
+{
+  "packageManager": "pnpm",
+  "architecture": "ddd",
+  "paths": {
+    "theme": "wordpress/wp-content/themes/generatepress-child"
+  },
+  "git": {
+    "baseBranch": "release",
+    "releaseBranch": "main",
+    "mergeStrategy": "rebase",
+    "protectedBranches": ["main", "release"],
+    "humanMergeTargets": ["main"]
+  },
+  "commands": {
+    "lint": "find wordpress/wp-content/themes/generatepress-child router.php -name '*.php' -print0 | xargs -0 -n1 php -l"
+  }
+}
