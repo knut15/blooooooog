@@ -124,15 +124,74 @@ function gpc_fallback_thumb_uri( $post_id ) {
 }
 
 /**
- * 목록에서 대표 이미지가 없으면 폴백 썸네일을 대신 출력한다.
- * GeneratePress 의 generate_post_image 는 대표 이미지가 없으면 아무것도 내지 않는다.
+ * 글에 실려 있는 첫 이미지를 찾는다. 본문에 넣은 것을 먼저 보고, 없으면 첨부 미디어를 본다.
+ *
+ * @param int    $post_id 글 ID.
+ * @param string $size    이미지 크기.
+ * @return string 없으면 빈 문자열.
  */
-function gpc_list_fallback_thumb() {
+function gpc_first_image_url( $post_id, $size = 'gpc-list-thumb' ) {
+	$content = get_post_field( 'post_content', $post_id );
+
+	if ( preg_match( '/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $m ) ) {
+		$url = $m[1];
+
+		// 이 사이트의 미디어면 잘라 둔 크기를 쓴다. 원본을 그대로 내보내면
+		// 목록 한 화면에 수 MB 가 실린다.
+		if ( 0 === strpos( $url, home_url() ) ) {
+			$attachment_id = attachment_url_to_postid( $url );
+
+			if ( $attachment_id ) {
+				$sized = wp_get_attachment_image_url( $attachment_id, $size );
+
+				if ( $sized ) {
+					return $sized;
+				}
+			}
+		}
+
+		return $url;
+	}
+
+	$media = get_attached_media( 'image', $post_id );
+
+	if ( $media ) {
+		$first = reset( $media );
+		$sized = wp_get_attachment_image_url( $first->ID, $size );
+
+		if ( $sized ) {
+			return $sized;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * 목록 썸네일. 순서는 대표 이미지 → 글에 실린 이미지 → 만들어 낸 그림이다.
+ *
+ * 대표 이미지는 GeneratePress 의 generate_post_image 가 이미 출력하므로
+ * 여기서는 그것이 없을 때만 나선다.
+ */
+function gpc_list_thumb() {
 	if ( is_singular() || has_post_thumbnail() ) {
 		return;
 	}
 
-	$uri = gpc_fallback_thumb_uri( get_the_ID() );
+	$post_id = get_the_ID();
+	$found   = gpc_first_image_url( $post_id );
+
+	if ( $found ) {
+		printf(
+			'<div class="post-image gpc-content-image">'
+				. '<a href="%1$s" aria-hidden="true" tabindex="-1">'
+				. '<img src="%2$s" alt="" loading="lazy" decoding="async" />'
+				. '</a></div>',
+			esc_url( get_permalink() ),
+			esc_url( $found )
+		);
+		return;
+	}
 
 	printf(
 		'<div class="post-image gpc-fallback-image">'
@@ -140,7 +199,7 @@ function gpc_list_fallback_thumb() {
 			. '<img src="%2$s" alt="" width="160" height="100" loading="lazy" decoding="async" />'
 			. '</a></div>',
 		esc_url( get_permalink() ),
-		esc_attr( $uri )
+		esc_attr( gpc_fallback_thumb_uri( $post_id ) )
 	);
 }
-add_action( 'generate_after_entry_header', 'gpc_list_fallback_thumb', 11 );
+add_action( 'generate_after_entry_header', 'gpc_list_thumb', 11 );
