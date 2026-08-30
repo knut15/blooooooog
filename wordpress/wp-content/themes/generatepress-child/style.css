@@ -900,3 +900,84 @@ h1, h2, h3, h4, h5, h6 {
 }
 .gpc-content-image a,
 .gpc-fallback-image a { display: block; line-height: 0; }
+
+/* ============================================================
+   19. 글 목차 — 본문 오른쪽 여백에 고정
+   ============================================================ */
+.gpc-toc {
+  position: fixed;
+  /* 처음 자리는 작성자 줄 다음이다. 실제 값은 toc.js 가 잰 뒤 덮어쓴다.
+     스크립트가 값을 넣기 전에는 보이지 않게 해 자리가 튀지 않게 한다. */
+  top: 300px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  /* 화면 가운데가 본문 가운데이므로, 본문 오른쪽 끝에서 48px 띄운다 */
+  left: calc(50% + (var(--content-width) / 2) + 48px);
+  width: 216px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  /* 스크롤바를 숨겨 선이 지저분해지지 않게 한다 */
+  scrollbar-width: none;
+}
+.gpc-toc::-webkit-scrollbar { display: none; }
+.gpc-toc.is-ready { opacity: 1; }
+
+.gpc-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+/* 항목 전체를 지나는 연한 세로 선. 활성 항목만 그 위에 진한 선을 덧그린다. */
+.gpc-toc-list::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.gpc-toc-item {
+  margin: 0 0 0.55em;
+  list-style: none;
+}
+.gpc-toc-item:last-child { margin-bottom: 0; }
+
+.gpc-toc-item a {
+  display: block;
+  padding-left: 1em;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.gpc-toc-item a:hover { color: var(--color-text); }
+
+/* h3 는 한 단 들여쓴다 */
+.gpc-toc-h3 a { padding-left: 1.85em; font-size: 0.79rem; }
+
+/* 지금 읽는 절 */
+.gpc-toc-item.is-active a {
+  color: var(--color-heading);
+  font-weight: 600;
+  border-left-color: var(--color-accent);
+}
+
+/* 본문과 목차가 함께 들어갈 만큼 넓지 않으면 감춘다.
+   728px 본문 + 48px 간격 + 216px 목차 + 좌우 여백 */
+@media (max-width: 1180px) {
+  .gpc-toc { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gpc-toc-item a { transition: none; }
+}
