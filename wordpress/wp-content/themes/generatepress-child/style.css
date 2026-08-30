@@ -890,6 +890,7 @@ h1, h2, h3, h4, h5, h6 {
    ============================================================ */
 /* 제목에서 만들어낸 SVG 라 원본 비율이 16:10 이다.
    실제 이미지와 같은 크기로 맞춰 목록의 줄이 흔들리지 않게 한다. */
+.gpc-content-image img,
 .gpc-fallback-image img {
   width: 168px;
   height: 105px;
@@ -897,4 +898,5 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
   display: block;
 }
+.gpc-content-image a,
 .gpc-fallback-image a { display: block; line-height: 0; }
