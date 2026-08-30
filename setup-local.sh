@@ -20,7 +20,7 @@ WP_ADMIN_USER=kim
 WP_ADMIN_PASS=$(openssl rand -base64 18 | tr -d '/+=' | head -c 20)
 WP_ADMIN_EMAIL=curve.ball.hiro@gmail.com
 WP_URL=http://localhost:8080
-WP_TITLE=블로그
+WP_TITLE=CurvezLog
 EOF
   chmod 600 "$ENV_FILE"
   echo "[+] .env 생성"
