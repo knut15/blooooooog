@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once get_stylesheet_directory() . '/inc/avatars.php';
 require_once get_stylesheet_directory() . '/inc/thumbnails.php';
+require_once get_stylesheet_directory() . '/inc/toc.php';
 
 /**
  * 부모 테마 스타일 뒤에 자식 테마 스타일을 붙인다.
