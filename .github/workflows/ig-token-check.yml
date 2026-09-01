@@ -1,0 +1,24 @@
+name: 인스타 토큰 만료 감시
+
+# 장기 토큰은 60일이고 만료되면 되살릴 수 없다. 인가부터 손으로 다시 해야 한다.
+# 갱신값을 시크릿에 자동 저장할 수 없으므로, 이 워크플로의 일은 알아채는 것이다.
+on:
+  schedule:
+    - cron: "0 0 * * 1"         # 매주 월요일
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 남은 날짜를 잰다
+        env:
+          T: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          R=$(curl -s "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=$T")
+          D=$(printf '%s' "$R" | python3 -c "import json,sys;print(json.load(sys.stdin).get('expires_in',0)//86400)" 2>/dev/null || echo 0)
+          echo "남은 수명: ${D}일"
+          if [ "$D" -lt 14 ]; then
+            echo "::error::인스타 토큰이 ${D}일 뒤 만료된다. ig-setup 으로 다시 인가해 시크릿을 갱신하라."
+            exit 1
+          fi
