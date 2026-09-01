@@ -1,0 +1,50 @@
+name: 인스타 댓글 응답
+
+# 「여름」 댓글에 템플릿을 DM 으로 보낸다.
+# 보낸 기록(scripts/.ig-replied.json)을 저장소에 커밋한다 — git 이 곧 멱등 장치다.
+on:
+  schedule:
+    - cron: "*/10 * * * *"      # 10분마다. 5분은 큐가 밀려 실제로는 더 늦다
+  workflow_dispatch:            # 손으로도 돌린다
+    inputs:
+      dry:
+        description: "보내지 않고 대상만 본다"
+        type: boolean
+        default: false
+
+# 두 실행이 겹치면 같은 댓글에 두 번 보낼 수 있다. 겹치면 뒤엣것을 버린다.
+concurrency:
+  group: ig-reply
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 응답 실행
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+        run: |
+          python3 scripts/ig-reply.py ${{ inputs.dry && '--dry' || '' }}
+
+      - name: 보낸 기록을 커밋한다
+        run: |
+          if git diff --quiet -- scripts/.ig-replied.json 2>/dev/null \
+             && [ -z "$(git status --porcelain scripts/.ig-replied.json)" ]; then
+            echo "변경 없음"; exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/.ig-replied.json
+          git commit -m "댓글 응답 기록을 남긴다 [skip ci]"
+          git push
