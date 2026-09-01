@@ -9,7 +9,10 @@ import json, os, re, sys, time, urllib.parse, urllib.request
 ROOT = os.path.expanduser('~/Workspace/blog')
 STATE = os.path.join(ROOT, 'scripts/.ig-replied.json')
 API = 'https://graph.instagram.com/v23.0'
-KEYWORD = '여름'
+# 키워드는 글의 캡션에서 읽는다. 캡션의 「…」 안에 쓴 단어가 그 글의 키워드다.
+# 글마다 달라져도 이 파일을 고칠 일이 없다.
+KEYWORD_FALLBACK = '여름'
+KEYWORD_RE = re.compile(r'[「『]\s*([^」』\n]{1,12})\s*[」』]')
 
 # 환경변수가 먼저다. Actions 에는 .env.local 이 없다.
 ENV = {}
@@ -58,16 +61,22 @@ def api(path, params=None, post=False):
 def load(): return json.load(open(STATE)) if os.path.exists(STATE) else {}
 def save(s): json.dump(s, open(STATE, 'w'), ensure_ascii=False, indent=1)
 
+def keyword_of(media_id):
+    r = api(media_id, {'fields': 'caption'})
+    m = KEYWORD_RE.search(r.get('caption') or '')
+    return (m.group(1).strip() if m else KEYWORD_FALLBACK)
+
 def run(media_id, dry=False):
     seen = load()
+    kw = keyword_of(media_id)
     r = api(f'{media_id}/comments', {'fields': 'id,text,username,timestamp', 'limit': '50'})
     if 'error' in r:
         print('  ✗ 댓글 조회 실패:', json.dumps(r['error'], ensure_ascii=False)[:300]); return 1
     rows = r.get('data', [])
-    hits = [c for c in rows if KEYWORD in (c.get('text') or '')]
-    print(f'  댓글 {len(rows)}개 · 「{KEYWORD}」 포함 {len(hits)}개 · 이미 처리 {len(seen)}건')
+    hits = [c for c in rows if kw in (c.get('text') or '')]
+    print(f'  키워드 「{kw}」 · 댓글 {len(rows)}개 · 해당 {len(hits)}개 · 이미 처리 {len(seen)}건')
     if not rows:
-        print(f'  (주인 계정이 단 댓글은 API 목록에 안 나온다. 다른 계정으로 시험한다)')
+        print('  (주인 계정이 단 댓글은 API 목록에 안 나온다. 다른 계정으로 시험한다)')
     sent = 0
     for c in hits:
         cid = c['id']
