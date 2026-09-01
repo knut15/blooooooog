@@ -4,7 +4,7 @@ name: 인스타 댓글 응답
 # 보낸 기록(scripts/.ig-replied.json)을 저장소에 커밋한다 — git 이 곧 멱등 장치다.
 on:
   schedule:
-    - cron: "*/10 * * * *"      # 10분마다. 5분은 큐가 밀려 실제로는 더 늦다
+    - cron: "*/5 * * * *"       # cron 최소 단위가 5분이다. 그보다 잦게는 못 건다
   workflow_dispatch:            # 손으로도 돌린다
     inputs:
       dry:
@@ -30,12 +30,24 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: 응답 실행
+      # cron 이 5분이 한계라, 한 번 실행 안에서 20초마다 훑는다.
+      # 실행이 4분 40초 살아 있으므로 다음 실행과 이어져 체감 지연은 20초 안쪽이다.
+      - name: 응답 실행 (20초 주기로 4분 40초)
         env:
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
           INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          DRY: ${{ inputs.dry && '--dry' || '' }}
+        timeout-minutes: 6
         run: |
-          python3 scripts/ig-reply.py ${{ inputs.dry && '--dry' || '' }}
+          END=$(( $(date +%s) + 280 ))
+          n=0
+          while [ "$(date +%s)" -lt "$END" ]; do
+            n=$((n+1)); echo "── 훑기 $n ──"
+            python3 scripts/ig-reply.py $DRY || echo "이번 회차 실패 — 다음 회차로 넘어간다"
+            [ "$(date +%s)" -ge "$END" ] && break
+            sleep 20
+          done
+          echo "총 $n 회 훑음"
 
       - name: 보낸 기록을 커밋한다
         run: |
