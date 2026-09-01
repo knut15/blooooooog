@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>인가 코드</title>
+<style>
+  :root{--bg:#0f1317;--fg:#e4e9ef;--dim:#7b8798;--line:#2c343e;--ok:#42c2dc}
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);margin:0;min-height:100vh;
+       display:grid;place-items:center;padding:24px;
+       font:15px/1.7 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+  .card{width:100%;max-width:560px;border:1px solid var(--line);border-radius:4px;padding:26px}
+  h1{font-size:17px;margin:0 0 6px}
+  p{color:var(--dim);font-size:13.5px;margin:0 0 18px}
+  code,#code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  #code{display:block;width:100%;background:#1a2029;border:1px solid var(--line);
+        border-radius:3px;padding:14px;font-size:13px;color:var(--ok);
+        word-break:break-all;user-select:all;min-height:52px}
+  button{margin-top:12px;font:inherit;font-size:13px;background:transparent;
+         color:var(--ok);border:1px solid var(--ok);border-radius:3px;
+         padding:8px 16px;cursor:pointer}
+  button:hover{background:#12313a}
+  .none{color:var(--dim)}
+</style>
+<div class="card">
+  <h1 id="t">인가 코드</h1>
+  <p id="s"></p>
+  <div id="code"></div>
+  <button id="b" hidden>복사</button>
+</div>
+<script>
+  // 인가 코드는 ?code= 로 오고 끝에 #_ 가 붙는다. 둘 다 걷어낸다.
+  var p = new URLSearchParams(location.search);
+  var code = p.get('code');
+  var err = p.get('error_description') || p.get('error');
+  var C = document.getElementById('code'), S = document.getElementById('s'), B = document.getElementById('b');
+
+  if (code) {
+    code = code.replace(/#_$/, '');
+    C.textContent = code;
+    S.textContent = '이 값을 마법사 6단계에 붙여넣는다. 한 번만 쓸 수 있고 몇 분 안에 만료된다.';
+    B.hidden = false;
+    B.onclick = function () {
+      navigator.clipboard.writeText(code).then(function () { B.textContent = '복사됨'; });
+    };
+  } else if (err) {
+    document.getElementById('t').textContent = '인가 실패';
+    C.textContent = err;
+    S.textContent = '앱 역할에 Instagram 테스터로 등록됐는지, 리다이렉트 URI 가 등록한 것과 같은지 확인한다.';
+  } else {
+    C.innerHTML = '<span class="none">코드 없음</span>';
+    S.textContent = '인가 URL 을 거쳐 들어와야 코드가 붙는다. 이 주소를 직접 열면 비어 있다.';
+  }
+</script>
