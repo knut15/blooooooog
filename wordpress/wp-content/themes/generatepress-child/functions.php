@@ -205,8 +205,21 @@ add_filter( 'generate_comment_avatar_size', 'gpc_comment_avatar_size' );
  * GeneratePress 의 기본 글 네비게이션을 끄고 썸네일 카드로 대체한다.
  * 단일 글의 네비게이션은 generate_after_loop 가 아니라
  * post meta item 으로 출력되므로 전용 필터로 꺼야 한다.
+ *
+ * 이 필터는 두 곳을 함께 제어한다 — 단일 글의 이전/다음 링크와,
+ * 목록(index·archive·search)의 페이지 넘김이다.
+ * 그래서 무조건 false 를 돌려주면 목록에서 2페이지로 가는 링크까지 사라진다.
+ * 단일 글에서만 끈다.
  */
-add_filter( 'generate_show_post_navigation', '__return_false' );
+add_filter( 'generate_show_post_navigation', 'gpc_show_post_navigation' );
+
+/**
+ * @param bool $show 부모 테마의 기본값.
+ * @return bool
+ */
+function gpc_show_post_navigation( $show ) {
+	return is_singular( 'post' ) ? false : $show;
+}
 add_action( 'generate_after_entry_content', 'gpc_post_navigation' );
 
 /**
@@ -265,6 +278,33 @@ function gpc_post_nav_card( $post, $dir, $label ) {
 		</span>
 	</a>
 	<?php
+}
+
+/**
+ * 목록 페이지 넘김의 이전·다음 라벨.
+ * 부모 테마 기본값은 화살표 문자(←·→)인데, 갈매기 아이콘으로 바꿔
+ * 숫자 칸과 같은 높이로 맞춘다.
+ */
+function gpc_pagination_prev_text() {
+	return gpc_pagination_chevron( 'left' ) . '<span>이전</span>';
+}
+add_filter( 'generate_previous_link_text', 'gpc_pagination_prev_text' );
+
+function gpc_pagination_next_text() {
+	return '<span>다음</span>' . gpc_pagination_chevron( 'right' );
+}
+add_filter( 'generate_next_link_text', 'gpc_pagination_next_text' );
+
+/**
+ * @param string $dir left 또는 right.
+ * @return string
+ */
+function gpc_pagination_chevron( $dir ) {
+	$path = 'left' === $dir ? 'm15 18-6-6 6-6' : 'm9 18 6-6-6-6';
+
+	return '<svg class="gpc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"'
+		. ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+		. ' aria-hidden="true"><path d="' . $path . '"/></svg>';
 }
 
 /**
