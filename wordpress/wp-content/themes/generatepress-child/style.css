@@ -199,17 +199,73 @@ h1, h2, h3, h4, h5, h6 {
 .site-title a { color: var(--color-heading); }
 .site-description { color: var(--color-text-muted); font-size: 0.9rem; }
 
+/* 사이트 설명 바로 아래에 붙는 탭 줄.
+   헤더와 내비가 따로 테두리를 그리면 줄이 두 개 보이므로 헤더 쪽을 지운다. */
+.site-header { border-bottom: 0; }
+
+/* 부모 테마가 헤더에 40px 을 두르는데, 그러면 설명글과 탭이 40px 넘게 벌어져
+   한 덩어리로 안 읽힌다. 아래쪽만 좁힌다. */
+.inside-header { padding-bottom: 14px; }
+
 .main-navigation {
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
 }
-.main-navigation a {
+
+/* 부모 테마는 이 줄을 900px 로 가두는데, 본문(728px)과 시작점이 어긋난다 */
+.main-navigation .inside-navigation {
+  max-width: var(--content-width);
+  padding: 0;
+}
+.main-navigation .main-nav > ul {
+  display: flex;
+  justify-content: center;
+  gap: 0.4em;
+}
+
+/* 탭 한 칸 — 밑줄로 지금 위치를 알린다. 배경을 칠하지 않는다 */
+.main-navigation .main-nav ul li a {
+  position: relative;
+  padding: 0.95em 1.1em;
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--color-text);
+  color: var(--color-text-muted);
+  background: none;
+  transition: color 0.15s ease;
 }
-.main-navigation .current-menu-item > a { color: var(--color-accent); font-weight: 700; }
+.main-navigation .main-nav ul li a:hover { color: var(--color-heading); background: none; }
+
+/* 밑줄은 테두리가 아니라 가상요소다 — 테두리로 그리면 줄 높이가 1px 흔들린다 */
+.main-navigation .main-nav ul li a::after {
+  content: "";
+  position: absolute;
+  left: 1.1em;
+  right: 1.1em;
+  bottom: -1px;
+  height: 2px;
+  background: transparent;
+}
+
+.main-navigation .main-nav ul li[class*="current-menu-"] > a,
+.main-navigation .main-nav ul li[class*="current_page_"] > a {
+  color: var(--color-heading);
+  font-weight: 700;
+  background: none;
+}
+.main-navigation .main-nav ul li[class*="current-menu-"] > a::after,
+.main-navigation .main-nav ul li[class*="current_page_"] > a::after {
+  background: var(--color-accent);
+}
+
+.main-navigation .main-nav ul li a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-navigation .main-nav ul li a { transition: none; }
+}
 
 /* ============================================================
    7. 글 목록 / 메타
