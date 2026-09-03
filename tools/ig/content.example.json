@@ -1,0 +1,38 @@
+{
+  "handle": "@prompt_ghosty",
+  "slides": [
+    {"type":"cover","photo":"img/cover.png",
+     "l1":"해외에서 난리난",
+     "l2":"크레용 프사 <em>만들기</em>"},
+
+    {"type":"text","h":"대부분 <mark>여기서</mark> 실패해요",
+     "body":["스타일 이름만 던지면 AI는 평균값을 그립니다. 그래서 밋밋해요.",
+             "그림체가 아니라 <strong>그리는 방식</strong>을 지시해야 합니다."]},
+
+    {"type":"list","n":1,"h":"꼭 들어가야 할 4가지",
+     "items":[["재료와 손","크레용·색연필, 삐뚤빼뚤한 선"],
+              ["종이","깨끗한 흰 종이 배경"],
+              ["반복 요소","구름·별·사탕·작은 성"],
+              ["손글씨 캡션","그날의 한 문장"]]},
+
+    {"type":"prompt","n":2,"h":"전체 프롬프트","small":true,
+     "label":"그대로 복사해서 쓰세요",
+     "prompt":"Transform the scene into a playful <b>crayon-style illustration</b>, like a 10-year-old's drawing. Use wobbly lines, imperfect shapes, and visible crayon textures on a clean white paper background.<br><br>Apply bright pastel and vibrant colors, letting them go slightly outside the lines for a natural handmade feel.<br><br>Add small, lively doodles like <b>smiling clouds, stars, candy, and tiny castles</b> to create a fun, imaginative world.<br><br>Keep it simple but expressive — warm, nostalgic, slightly messy, and full of innocent charm.<br><br>Add one short handwritten sentence in crayon, in a child's messy handwriting: <b>\"여기에 원하는 문장\"</b>",
+     "tip":"마지막 줄의 문장만 매번 바꾸면 톤이 고정됩니다"},
+
+    {"type":"gallery","n":3,"h":"이렇게 나와요",
+     "images":["img/01.png","img/02.png","img/03.png","img/04.png"],
+     "cap":"같은 프롬프트, 다른 사진 4장"},
+
+    {"type":"prompt","n":4,"h":"배경까지 비우고 싶다면",
+     "label":"위 프롬프트 뒤에 한 줄 더",
+     "prompt":"배경은 <b>빈 흰 종이</b>로 두고, 원래 사진의 바닥·건물·풀은 그리지 마. 나머지 조건은 그대로.",
+     "tip":"인물이나 사물 하나만 남기고 싶을 때 씁니다"},
+
+    {"type":"compare","h":"한 줄이 만드는 차이",
+     "bad":["이렇게 쓰면","이 사진 크레용 그림으로 바꿔줘"],
+     "good":["이렇게 쓰면","재료 + 종이 + 반복 요소 + 손글씨 캡션을 전부 지정"]},
+
+    {"type":"cta","h":"프롬프트 전문을\n파일로 드려요","btn":"댓글에 ‘고스트’","note":"바로 붙여넣을 수 있는 형태로 DM 발송"}
+  ]
+}

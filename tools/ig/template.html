@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    /* @prompt_ghosty 팔레트. news.py 에서 쓰던 값 그대로다. */
+    --bg:#1B2028;          /* 메시 배경이 덮지 못한 자리 */
+    --card:#232B36;        /* 박스 바탕 — 색이 아니라 명도 한 단계 */
+    --ink:#FFFFFF;
+    --ink-soft:#9AA8B6;
+    --accent:#5FE8FF;      /* 액센트는 이 하나뿐이다 */
+    --line:#4A5866;
+    --W:1080px; --H:1350px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#555;font-family:"Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif}
+
+  .slide{
+    width:var(--W); height:var(--H);
+    background:var(--bg) center/cover no-repeat;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    padding:250px 60px 150px;
+  }
+  .slide > *{position:relative}
+
+  /* ── 하단 브랜드 바 — 본문 장에만 붙는다 ── */
+  .brand{
+    position:absolute; left:60px; right:60px; bottom:70px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand .mark{display:flex;align-items:center;gap:20px}
+  .brand .bar{width:8px;height:48px;background:var(--accent);border-radius:4px}
+  .brand .handle{font-size:30px;font-weight:700;color:var(--accent);letter-spacing:-.01em}
+  .brand .page{font-size:28px;font-weight:700;color:var(--ink-soft);opacity:.7}
+
+  /* ── 커버 — 그림 전면, 글자 라인은 D01 실측값에 맞춘다 ──
+     PIL 커버(cover.py)와 같은 자리: 1줄 top 997, 2줄 top 1058, 왼쪽 60 */
+  .cover{padding:0}
+  .cover .photo{position:absolute;inset:0;background:center/cover no-repeat}
+  .cover .shade{
+    position:absolute;left:0;right:0;top:52%;bottom:0;
+    background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.86) 100%);
+  }
+  .cover .l1{
+    position:absolute;left:60px;top:997px;
+    font-size:46px;line-height:56px;font-weight:700;color:var(--ink);
+  }
+  .cover .l2{
+    position:absolute;left:60px;top:1058px;
+    font-size:96px;line-height:116px;font-weight:700;color:var(--ink);
+    letter-spacing:-.01em;white-space:nowrap;
+  }
+  .cover .l2 em{font-style:normal;color:var(--accent)}
+  .cover .l2 img{height:76px;margin-left:22px;vertical-align:middle;position:relative;top:-4px}   /* 유령은 2줄 끝에 이어 붙인다 */
+
+  /* ── 그림 한 장 (마무리 고스트 등) ── */
+  .full{padding:0}
+  .full img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* ── 본문 ── */
+  .chip{
+    align-self:flex-start;flex:none;font-size:30px;font-weight:700;color:var(--bg);
+    background:var(--accent);border-radius:8px;padding:8px 20px 12px;margin-bottom:30px;
+  }
+  .n{
+    font-size:30px;font-weight:800;color:var(--bg);background:var(--accent);
+    width:60px;height:60px;min-height:60px;flex:none;align-self:flex-start;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;margin-bottom:30px;
+  }
+  h2{
+    font-size:58px;font-weight:700;line-height:1.28;color:var(--ink);
+    letter-spacing:-.03em;margin-bottom:36px;
+  }
+  h2 mark{background:rgba(95,232,255,.18);color:var(--accent);padding:0 10px;border-radius:6px}
+  p{font-size:36px;line-height:1.62;color:var(--ink-soft);font-weight:500}
+  p + p{margin-top:28px}
+  p strong{color:var(--ink);font-weight:700}
+
+  /* ── 리스트 ── */
+  ul{list-style:none;margin-top:8px}
+  li{
+    font-size:36px;line-height:1.5;color:var(--ink);font-weight:600;
+    padding:26px 0 26px 50px;position:relative;border-bottom:1px solid var(--line);
+  }
+  li:last-child{border-bottom:none}
+  li::before{content:"";position:absolute;left:6px;top:38px;
+    width:18px;height:18px;border-radius:50%;background:var(--accent)}
+  li span{display:block;font-size:29px;color:var(--ink-soft);font-weight:500;margin-top:10px}
+
+  /* ── 비교 — 액센트가 하나뿐이라 좋은 쪽만 시안, 나쁜 쪽은 무채색이다 ── */
+  .compare{display:flex;flex-direction:column;gap:28px;margin-top:8px}
+  .box{border-radius:20px;padding:36px 38px;background:var(--card)}
+  .box.bad{box-shadow:inset 0 0 0 2px var(--line)}
+  .box.good{box-shadow:inset 0 0 0 2px rgba(95,232,255,.55)}
+  .box .tag{font-size:27px;font-weight:800;margin-bottom:16px;letter-spacing:.02em}
+  .box.bad .tag{color:var(--ink-soft)} .box.good .tag{color:var(--accent)}
+  .box .body{font-size:34px;line-height:1.5;color:var(--ink);font-weight:600}
+
+  /* ── 프롬프트 블록 ── */
+  .plabel{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:16px}
+  .pbox{
+    background:var(--card);border-radius:20px;padding:38px 40px;
+    box-shadow:inset 0 0 0 2px rgba(95,232,255,.28);
+    font-size:32px;line-height:1.56;color:var(--ink);font-weight:600;
+  }
+  .pbox.sm{font-size:26px;line-height:1.52;padding:32px 34px}
+  .pbox b{color:var(--accent);font-weight:700}
+  .ptip{
+    margin-top:28px;font-size:29px;line-height:1.5;color:var(--ink-soft);
+    font-weight:500;padding-left:28px;position:relative;
+  }
+  .ptip::before{content:"";position:absolute;left:0;top:14px;
+    width:13px;height:13px;border-radius:50%;background:rgba(95,232,255,.45)}
+
+  /* ── 결과물 갤러리 ── */
+  .gallery{
+    flex:1;min-height:0;margin-top:6px;
+    display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:24px;
+  }
+  .gallery > *{min-height:0;min-width:0}
+  .gallery img{
+    width:100%;height:100%;min-height:0;object-fit:cover;
+    border-radius:14px;display:block;box-shadow:0 10px 26px rgba(0,0,0,.35);
+  }
+  .gcap{margin-top:28px;font-size:29px;color:var(--ink-soft);font-weight:500;text-align:center}
+
+  /* ── 인용 ── */
+  .quote{justify-content:center}
+  .quote .q{font-size:72px;font-weight:700;line-height:1.4;color:var(--ink);letter-spacing:-.03em}
+  .quote .q::before{content:"";display:block;width:90px;height:8px;
+    background:var(--accent);border-radius:4px;margin-bottom:44px}
+
+  /* ── CTA ── */
+  .cta{justify-content:center;align-items:flex-start}
+  .cta h2{font-size:72px}
+  .cta .btn{
+    margin-top:44px;font-size:36px;font-weight:700;color:var(--bg);
+    background:var(--accent);padding:28px 50px;border-radius:100px;
+  }
+  .cta .note{margin-top:30px;font-size:30px;color:var(--ink-soft);font-weight:500}
+
+  .spacer{flex:1}
+  .src{position:absolute;left:60px;bottom:142px;font-size:24px;color:var(--ink-soft);font-weight:500}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// 데이터는 render.py 가 window.SLIDES 로 주입한다.
+const D = window.SLIDES;
+const nl = s => (s||"").replace(/\n/g,"<br>");
+
+function brand(i, total){
+  return `<div class="brand">
+    <div class="mark"><div class="bar"></div><div class="handle">${D.handle}</div></div>
+    <div class="page">${i}/${total}</div></div>`;
+}
+
+function render(s, i, total){
+  // 커버는 본문과 조판이 아예 다르다. 기존 커버(cover.py)와 같은 자리에 글자를 둔다.
+  if (s.type === "cover") {
+    return `<div class="slide cover" data-i="${i}">
+      <div class="photo" style="background-image:url('${s.photo}')"></div>
+      <div class="shade"></div>
+      <div class="l1">${s.l1}</div>
+      <div class="l2">${s.l2}<img src="${D.ghost}"></div>
+    </div>`;
+  }
+
+  if (s.type === "image") {
+    return `<div class="slide full" data-i="${i}"><img src="${s.image}"></div>`;
+  }
+
+  let inner = "";
+  if (s.type === "text") {
+    inner = `${s.n?`<div class="n">${s.n}</div>`:""}${s.chip?`<div class="chip">${s.chip}</div>`:""}<h2>${nl(s.h)}</h2>
+             ${(s.body||[]).map(t=>`<p>${nl(t)}</p>`).join("")}<div class="spacer"></div>`;
+  } else if (s.type === "list") {
+    inner = `${s.n?`<div class="n">${s.n}</div>`:""}<h2>${nl(s.h)}</h2>
+             <ul>${(s.items||[]).map(it=>Array.isArray(it)
+               ? `<li>${it[0]}<span>${it[1]}</span></li>` : `<li>${it}</li>`).join("")}</ul>
+             <div class="spacer"></div>`;
+  } else if (s.type === "compare") {
+    inner = `${s.n?`<div class="n">${s.n}</div>`:""}<h2>${nl(s.h)}</h2>
+             <div class="compare">
+               <div class="box bad"><div class="tag">${s.bad[0]}</div><div class="body">${nl(s.bad[1])}</div></div>
+               <div class="box good"><div class="tag">${s.good[0]}</div><div class="body">${nl(s.good[1])}</div></div>
+             </div><div class="spacer"></div>`;
+  } else if (s.type === "prompt") {
+    inner = `${s.n?`<div class="n">${s.n}</div>`:""}<h2>${nl(s.h)}</h2>
+             <div class="plabel">${s.label||"프롬프트"}</div>
+             <div class="pbox${s.small?" sm":""}">${nl(s.prompt)}</div>
+             ${s.tip?`<div class="ptip">${nl(s.tip)}</div>`:""}<div class="spacer"></div>`;
+  } else if (s.type === "gallery") {
+    inner = `${s.n?`<div class="n">${s.n}</div>`:""}${s.h?`<h2>${nl(s.h)}</h2>`:""}
+             <div class="gallery">${(s.images||[]).map(src=>`<img src="${src}">`).join("")}</div>
+             ${s.cap?`<div class="gcap">${nl(s.cap)}</div>`:""}`;
+  } else if (s.type === "quote") {
+    inner = `<div class="q">${nl(s.q)}</div>`;
+  } else if (s.type === "cta") {
+    inner = `<h2>${nl(s.h)}</h2><div class="btn">${s.btn}</div>
+             ${s.note?`<div class="note">${s.note}</div>`:""}`;
+  }
+  const cls = ["quote","cta"].includes(s.type) ? ` ${s.type}` : "";
+  const bg = s.bg ? ` style="background-image:url('${s.bg}')"` : "";
+  const src = s.src ? `<div class="src">${s.src}</div>` : "";
+  return `<div class="slide${cls}" data-i="${i}"${bg}>${inner}${src}${brand(i,total)}</div>`;
+}
+
+// ONLY 가 있으면 그 한 장만 그린다. 스크린샷이 뷰포트 한 장이기 때문이다.
+const T = D.slides.length;
+document.getElementById("root").innerHTML = window.ONLY
+  ? render(D.slides[window.ONLY-1], window.ONLY, T)
+  : D.slides.map((s,i)=>render(s,i+1,T)).join("");
+</script>
+</body>
+</html>
